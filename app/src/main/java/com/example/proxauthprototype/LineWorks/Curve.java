@@ -126,10 +126,51 @@ public class Curve {
         List<Point> smoothedPoints = new ArrayList<>();
 
         Point newPoint = points.get(1);
+        int size = points.size();
 
-        for(int i = 2; i<points.size()-2;i++){
-
+        for(int i = 2; i<size-2;i++){
+            Point lastPoint  = newPoint;
+            newPoint = smoothPoint(points.subList(i-2,i+3));
+            smoothedPoints.add(lastPoint);
+            smoothedPoints.add(newPoint);
         }
+
+        smoothedPoints.add(newPoint);
+        smoothedPoints.add(points.get(size-2));
+        smoothedPoints.add(points.get(size-1));
+
+        return new Curve(smoothedPoints);
+    }
+
+    private static Point smoothPoint(List<Point> points) {
+
+        double avgX = 0;
+        double avgY = 0;
+
+        for(Point point: points){
+            avgX += point.getX();
+            avgY += point.getY();
+        }
+
+        avgX /= points.size();
+        avgY /= points.size();
+
+        Point newPoint = new Point(avgX,avgY);
+        Point oldPoint = points.get(points.size()/2);
+        double newX = (newPoint.getX() + oldPoint.getX())/2;
+        double newY = (newPoint.getY() + oldPoint.getY())/2;
+
+        return new Point(newX,newY);
+    }
+
+    public List<Point> sample(double start, double step, double end){
+        List<Point> samples = new ArrayList<>();
+        for(double i=start; i<=end; i+=step){
+            Point point = new Point(i,find(i));
+            samples.add(point);
+        }
+
+        return samples;
     }
 
 }
